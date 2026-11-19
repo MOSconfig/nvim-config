@@ -85,7 +85,9 @@ return {
           try {
             $zip = Join-Path $temp 'preview.zip'
             Invoke-WebRequest -UseBasicParsing "https://github.com/iamcco/markdown-preview.nvim/releases/download/v$version/markdown-preview-win.zip" -OutFile $zip
-            Expand-Archive -LiteralPath $zip -DestinationPath $temp
+            # Unzip with .NET: started from pwsh, Windows PowerShell can load pwsh's incompatible Archive module.
+            Add-Type -AssemblyName System.IO.Compression.FileSystem
+            [IO.Compression.ZipFile]::ExtractToDirectory($zip, $temp)
             $binary = Join-Path $temp 'markdown-preview-win.exe'
             if (-not (Test-Path -LiteralPath $binary)) { throw 'Windows preview executable missing from archive' }
             $null = [IO.Directory]::CreateDirectory((Join-Path $PWD 'bin'))
