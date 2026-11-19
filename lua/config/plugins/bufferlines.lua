@@ -5,13 +5,20 @@
 require('bufferlines').setup({
   highlights = function(defaults)
     local highlights = defaults.highlights
+    local palette = require('apollo.palette')
     local background = vim.api.nvim_get_hl(0, { name = 'Normal', link = false }).bg or 'NONE'
-    for _, group in pairs(highlights) do
-      if group.bg ~= nil then group.bg = background end
+    for name, group in pairs(highlights) do
+      if name:match('_selected$') then
+        -- Apollo accent block: the whole active tab is dark text on the accent; only the pick letter keeps its color.
+        group.bg = palette.accent
+        if name ~= 'pick_selected' then group.fg = palette.background end
+      elseif group.bg ~= nil then
+        group.bg = background
+      end
     end
-    highlights.buffer_selected = { fg = '#ffffff', bg = '#365b80', bold = true, italic = false }
+    highlights.buffer_selected = { fg = palette.background, bg = palette.accent, bold = true, italic = false }
     for _, name in ipairs({ 'separator', 'separator_visible', 'separator_selected' }) do
-      highlights[name] = { fg = background, bg = name == 'separator_selected' and '#365b80' or background }
+      highlights[name] = { fg = background, bg = name == 'separator_selected' and palette.accent or background }
     end
     return highlights
   end,
