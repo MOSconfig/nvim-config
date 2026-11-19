@@ -118,11 +118,29 @@ local function run()
   local function selected_colors()
     local selected = vim.api.nvim_get_hl(0, { name = 'BufferLinesBufferSelected', link = false })
     local background = vim.api.nvim_get_hl(0, { name = 'BufferLinesBackground', link = false })
-    assert(selected.bg == 0x365b80 and selected.fg == 0xffffff and selected.bold, 'Active tab must have a contrasting background')
+    assert(selected.bg == 0xfabd2f and selected.fg == 0x141617 and selected.bold, 'Active tab must use the Apollo accent block')
     assert(selected.bg ~= background.bg, 'Active and inactive tabs must be distinguishable')
+    local parts = 0
+    for _, name in ipairs(vim.fn.getcompletion('BufferLines', 'highlight')) do
+      if name:match('Selected$') and name ~= 'BufferLinesSeparatorSelected' then
+        local part = vim.api.nvim_get_hl(0, { name = name, link = false })
+        local readable = name == 'BufferLinesPickSelected' and part.fg ~= 0xfabd2f or name:match('DevIcon') or part.fg == 0x141617
+        assert(part.bg == 0xfabd2f and readable, name .. ' must be readable inside the accent block')
+        parts = parts + 1
+      end
+    end
+    assert(parts >= 18, 'Every selected tab part must be checked')
+    local separator = vim.api.nvim_get_hl(0, { name = 'BufferLinesSeparatorSelected', link = false })
+    assert(separator.bg == 0xfabd2f and separator.fg == background.bg, 'Selected slope edges must cut into the editor background')
     local normal = vim.api.nvim_get_hl(0, { name = 'Normal', link = false }).bg
-    for _, name in ipairs({ 'BufferLinesFill', 'BufferLinesBackground', 'BufferLinesBufferVisible' }) do
-      assert(vim.api.nvim_get_hl(0, { name = name, link = false }).bg == normal, 'Inactive header areas must match the editor background')
+    for _, name in ipairs({ 'BufferLinesSeparator', 'BufferLinesSeparatorVisible' }) do
+      local part = vim.api.nvim_get_hl(0, { name = name, link = false })
+      assert(part.fg == normal and part.bg == normal, name .. ' must blend into the editor background')
+    end
+    for _, name in ipairs({ 'BufferLinesFill', 'BufferLinesBackground', 'BufferLinesBufferVisible', 'BufferLinesTab' }) do
+      local part = vim.api.nvim_get_hl(0, { name = name, link = false })
+      assert(part.bg == normal, 'Inactive header areas must match the editor background')
+      assert(part.fg == 0x928374, name .. ' must keep Apollo inactive text')
     end
   end
   selected_colors()
