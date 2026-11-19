@@ -9,6 +9,8 @@
 A modern Neovim configuration ported from the original [m-vim](https://github.com/MOSconfig/vim-config) setup.
 Written in Lua, managed by [lazy.nvim](https://github.com/folke/lazy.nvim).
 
+![nvim-config in the Apollo theme: Neo-tree, Bufferlines tabs, split editors, and lualine](docs/images/hero.png)
+
 > **For Claude Code**: See [`CLAUDE.md`](CLAUDE.md) for repository operations and architecture.
 
 ## Highlights
@@ -20,6 +22,18 @@ Written in Lua, managed by [lazy.nvim](https://github.com/folke/lazy.nvim).
 - **Neo-tree** — file explorer sidebar
 - **UltiSnips** — bundled snippets for Python, JS, C/C++, Go, PHP
 - **Private overrides** — `private.lua` for personal plugins, never touched by updates
+
+## Screenshots
+
+**Find files with Telescope** (`,p`): fuzzy search with a live preview.
+
+![Telescope find files with a preview of lua/plugins/init.lua](docs/images/telescope.png)
+
+**Terminal split** (`,t`): a shell below the file you are editing, with the file still visible.
+
+![A terminal split under theme.lua, next to lsp.lua](docs/images/terminal.png)
+
+Screenshots are from this configuration's public files in the default Apollo theme.
 
 ## Requirements
 
