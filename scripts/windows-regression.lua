@@ -69,6 +69,9 @@ local function unit()
           eq(vim.list_slice(command, 1, 5), { 'powershell', '-NoLogo', '-NoProfile', '-NonInteractive', '-Command' }, 'native preview command')
           assert(command[6]:find('Invoke-WebRequest -UseBasicParsing', 1, true), 'preview must avoid the legacy web parser')
           assert(command[6]:find("$ErrorActionPreference = 'Stop'", 1, true), 'preview errors must terminate')
+          -- Windows PowerShell started from pwsh can load pwsh's Archive module, whose Expand-Archive fails on .NET Framework.
+          assert(not command[6]:find('Expand-Archive', 1, true), 'preview must not depend on the Archive module')
+          assert(command[6]:find('[IO.Compression.ZipFile]::ExtractToDirectory($zip, $temp)', 1, true), 'preview must unzip with .NET')
         else
           eq(command, { 'bash', 'install.sh', 'v0.0.10' }, 'Unix preview command')
         end
