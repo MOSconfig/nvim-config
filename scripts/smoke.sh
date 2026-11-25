@@ -357,6 +357,23 @@ keys('jjjj')
 assert(handle.first_row > first, 'header j must reveal overflow rows')
 keys('kkkk')
 assert(handle.first_row == first, 'header k must return to the first rows')
+-- This config maps <Left>/<Right> globally to buffer cycling; inside the header each arrow must
+-- still act exactly like its letter (bufferlines.nvim v1.1.0 aliased only <Down>/<Up>).
+keys('lj')
+for _, pair in ipairs({ { 'l', '<Right>', 'h' }, { 'h', '<Left>', 'l' }, { 'j', '<Down>', 'k' }, { 'k', '<Up>', 'j' } }) do
+  local letter, arrow, back = unpack(pair)
+  local start = handle.candidate
+  keys(letter)
+  local expected = handle.candidate
+  assert(expected ~= start, 'header ' .. letter .. ' fixture must move')
+  keys(back)
+  assert(handle.candidate == start, 'header ' .. back .. ' must return to the start')
+  keys(arrow)
+  assert(handle.candidate == expected, 'header ' .. arrow .. ' must move like ' .. letter)
+  assert(api.nvim_get_current_win() == handle.win, 'header ' .. arrow .. ' must keep header focus')
+  assert(api.nvim_win_get_buf(editor) == original, 'header ' .. arrow .. ' must not run the global buffer-cycle map')
+  keys(back)
+end
 assert(api.nvim_win_get_buf(editor) == original, 'header navigation must not switch the editing buffer')
 keys('<Esc>')
 assert(api.nvim_get_current_win() == editor, 'Escape must return to the editing window')
